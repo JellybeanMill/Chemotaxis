@@ -1,14 +1,15 @@
 //declare bacteria variables here
 Grass [] startingGrass;
-//Bacteria [] colony1;
+Predator [] class1;
 int counter = 9;
 int startingGrassLength = 1;
+int class1 = 0;
 void setup()
 {     
 	size(1000,600);
 	startingGrass = new Grass[100000];
 	startingGrass[0] = new Grass(500,300);
-//	colony1 = new Bacteria[1000];
+	class1 = new Predator[1000];
 }   
 void draw()
 {   
@@ -18,6 +19,10 @@ void draw()
 	{
 		counter = 0;
 	}
+	grassCreation();
+}
+void grassCreation()
+{
 	if (counter == 300)
 	{
 		int grassNullMeter = 0;
@@ -52,7 +57,14 @@ void draw()
 		}
 	}
 }
+void predatoryAttack()
+{
 
+}
+void predatorySpawn()
+{
+
+}
 class Grass
 {
 	int myX, myY;
@@ -92,9 +104,8 @@ class Grass
 		}
 	}
 }
-/*
-class Bacteria
+class Predator
 {     
-
+	int myX, myY;
+	
 } 
-*/   
