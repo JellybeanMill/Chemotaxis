@@ -1,15 +1,15 @@
 //declare bacteria variables here
 Grass [] startingGrass;
-Predator [] allPredators;
+Predator1 [] allpredator1;
 int counter = 9;
 int startingGrassLength = 1;
-int predatorLength = 0;
+int predator1Length = 0;
 void setup()
 {     
 	size(1000,600);
 	startingGrass = new Grass[1000000];
 	startingGrass[0] = new Grass(500,300);
-	allPredators = new Predator[1000000];
+	allPredator1 = new Predator1[1000000];
 }   
 void draw()
 {
@@ -20,11 +20,11 @@ void draw()
 		counter = 0;
 	}
 	grassCreation();
-	predatoryCreation();
+	predatory1Creation();
 }
 void grassCreation()
 {
-	if (counter%150==0)
+	if (counter%50==0)
 	{
 		int grassNullMeter = 0;
 		for (int i=0;i<startingGrassLength;i++)
@@ -60,37 +60,46 @@ void grassCreation()
 		}
 	}
 }
-void predatoryCreation()
+void predatory1Creation()
 {
 	int predatorNullMeter=0;
-	for(int i=0;i<predatorLength;i++)
+	int grassHereMeter = 0;
+	for (int i=0;i<startingGrassLength;i++)
 	{
-		allPredators[i].move();
-		allPredators[i].show();
-		if (allPredators[i].isDead == true)
+		if (startingGrass[i].useless == false)
+		{
+			grassHereMeter++;
+		}
+	}
+	for(int i=0;i<predator1Length;i++)
+	{
+		allPredator1[i].move();
+		allPredator1[i].show();
+		if (allPredator1[i].isDead == true)
 		{
 			predatorNullMeter++;
 		}
 	}
-	if (predatorNullMeter == predatorLength)
+	if ((predatorNullMeter == predator1Length)&&(grassHereMeter>=20))
 	{
 		int predatorNullPoint = 0-12;
-		for (int i=0;i<predatorLength;i++)
+		for (int i=0;i<predator1Length;i++)
 		{
-			if (allPredators[i].isDead == true)
+			if (allPredator1[i].isDead == true)
 			{
 				predatorNullPoint = i;
 			}
 		}
 		if (predatorNullPoint != 0-12)
 		{
-			allPredators[predatorNullPoint] = new Predator((int)(Math.random()*1001),(int)(Math.random()*601),1,255,0,0);
+			allPredator1[predatorNullPoint] = new Predator((int)(Math.random()*1001),(int)(Math.random()*601),1,255,0,0);
 		}
 	}
-	if ((predatorLength==0)&&(startingGrassLength>=20))
+	
+	if ((predator1Length==0)&&(grassHereMeter>=20))
 	{
-		allPredators[predatorLength] = new Predator((int)(Math.random()*1001),(int)(Math.random()*601),1,255,0,0);
-		predatorLength++;
+		allPredator1[predator1Length] = new Predator((int)(Math.random()*1001),(int)(Math.random()*601),1,255,0,0);
+		predator1Length++;
 	}
 }
 class Grass
@@ -151,11 +160,11 @@ class Grass
 		}
 	}
 }
-class Predator
+class Predator1
 {
 	int myX, myY, mySize, myRed, myGreen, myBlue, eaten, needToEat, canWalk;
 	boolean isDead;
-	Predator(int startx, int starty,int inputSize, int inputR, int inputG, int inputB)
+	Predator1(int startx, int starty,int inputSize, int inputR, int inputG, int inputB)
 	{
 		myX = startx;
 		myY = starty;
@@ -165,7 +174,7 @@ class Predator
 		myGreen = inputG;
 		myBlue = inputB;
 		eaten = 0;
-		needToEat = (int)(sq(inputSize*10));
+		needToEat = 10;
 		canWalk = 100;
 	}
 	void show()
@@ -257,20 +266,22 @@ class Predator
 			if (eaten >= needToEat)
 			{
 				int predatorNullPoint = 0-12;
-				for (int i=0;i<predatorLength;i++)
+				for (int i=0;i<predator1Length;i++)
 				{
-					if (allPredators[i].isDead == true)
+					if (allPredator1[i].isDead == true)
 					{
 						predatorNullPoint = i;
 					}
 				}
 				if (predatorNullPoint != 0-12)
 				{
-					allPredators[predatorNullPoint] = new Predator(myX,myY,mySize,myRed,myGreen,myBlue);
+					allPredator1[predatorNullPoint] = new Predator1(myX,myY,mySize,myRed,myGreen,myBlue);
+					eaten = 0;
 				}else
 				{
-					predatorLength++;
-					allPredators[predatorLength-1] = new Predator(myX,myY,mySize,myRed,myGreen,myBlue);
+					predator1Length++;
+					allPredator1[predator1Length-1] = new Predator1(myX,myY,mySize,myRed,myGreen,myBlue);
+					eaten = 0;
 				}
 			}
 			//dying
