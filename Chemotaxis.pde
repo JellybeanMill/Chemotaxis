@@ -1,6 +1,6 @@
 //declare bacteria variables here
 Grass [] startingGrass;
-Predator1 [] allpredator1;
+Predator1 [] allPredator1;
 int counter = 9;
 int startingGrassLength = 1;
 int predator1Length = 0;
@@ -92,13 +92,13 @@ void predatory1Creation()
 		}
 		if (predatorNullPoint != 0-12)
 		{
-			allPredator1[predatorNullPoint] = new Predator((int)(Math.random()*1001),(int)(Math.random()*601),1,255,0,0);
+			allPredator1[predatorNullPoint] = new Predator1((int)(Math.random()*1001),(int)(Math.random()*601),1,255,0,0);
 		}
 	}
 	
 	if ((predator1Length==0)&&(grassHereMeter>=20))
 	{
-		allPredator1[predator1Length] = new Predator((int)(Math.random()*1001),(int)(Math.random()*601),1,255,0,0);
+		allPredator1[predator1Length] = new Predator1((int)(Math.random()*1001),(int)(Math.random()*601),1,255,0,0);
 		predator1Length++;
 	}
 }
@@ -181,9 +181,9 @@ class Predator1
 	{
 		if (isDead == false)
 		{
-		stroke(myRed,myGreen,myBlue);
-		fill(myRed,myGreen,myBlue);
-		ellipse(myX, myY, mySize+2, mySize+2);
+			stroke(myRed,myGreen,myBlue);
+			fill(myRed,myGreen,myBlue);
+			ellipse(myX, myY, mySize+2, mySize+2);
 		}
 	}
 	void move()
@@ -194,13 +194,14 @@ class Predator1
 			canWalk -= 1;
 			int targetX =(int)(Math.random()*1001);
 			int targetY =(int)(Math.random()*601);
+			boolean cannibalism = false;
 			//distance finding
-			if (mySize == 1);
+			if (cannibalism == false)
 			{
 				for (int i=0;i<startingGrassLength;i++)
 				{
 					if (startingGrass[i].useless == false)
-					{
+					{						
 						if (dist(startingGrass[i].myX,startingGrass[i].myY,myX,myY)<closestDistance)
 						{
 							closestDistance = (int)(dist(startingGrass[i].myX,startingGrass[i].myY,myX,myY));
@@ -216,8 +217,38 @@ class Predator1
 						{
 							canWalk += 3;
 						}
+					}		
+				}
+			}else if (cannibalism == true)
+			{
+				for (int i=0;i<predator1Length;i++)
+				{
+					if ((myX==allPredator1[i].myX)&&(myY==allPredator1[i].myY))
+					{
+						allPredator1[i].isDead=true;
+						eaten++;
+						if (canWalk <= 115)
+						{
+							canWalk +=2;
+						}
 					}
 				}
+			}
+			//cannibalism
+			if (dist(myX,myY,targetX,targetY)>mySize*100)
+			{
+				for (int i=0;i<predator1Length;i++)
+				{
+					if (dist(myX,myY,allPredator1[i].myX,allPredator1[i].myY)<dist(myX,myY,targetX,targetY))
+					{
+						if ((myX!=allPredator1[i].myX)||(myY!=allPredator1[i].myY))
+						{
+							targetX = allPredator1[i].myX;
+							targetY = allPredator1[i].myY;
+						}
+					}
+				}
+				cannibalism=true;
 			}
 			//actual walking
 			if (dist(myX,myY,targetX,targetY)>sq(mySize+2))
@@ -283,9 +314,10 @@ class Predator1
 					allPredator1[predator1Length-1] = new Predator1(myX,myY,mySize,myRed,myGreen,myBlue);
 					eaten = 0;
 				}
+				eaten = 0;
 			}
 			//dying
-			if ((canWalk<=0)||(dist(myX,myY,targetX,targetY)>(mySize*100)))
+			if (canWalk<=0)			
 			{
 				isDead = true;
 			}
