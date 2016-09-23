@@ -338,7 +338,7 @@ class Predator1
 			{
 				isDead = true;
 			}
-			if ((myX<0)||(myX>1000)||(myY<0)||(myY>600))
+			if ((myX<-20)||(myX>1020)||(myY<-20)||(myY>620))
 			{
 				isDead = true;
 			}
