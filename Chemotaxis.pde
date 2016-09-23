@@ -21,6 +21,7 @@ void draw()
 	}
 	grassCreation();
 	predatory1Creation();
+	destroyEverything();
 }
 void grassCreation()
 {
@@ -92,14 +93,42 @@ void predatory1Creation()
 		}
 		if (predatorNullPoint != 0-12)
 		{
-			allPredator1[predatorNullPoint] = new Predator1((int)(Math.random()*1001),(int)(Math.random()*601),1,255,0,0);
+			allPredator1[predatorNullPoint] = new Predator1((int)((Math.random()*20)+(startingGrass[predatory1PreyFinding()].myX-10)),(int)((Math.random()*20)+(startingGrass[predatory1PreyFinding()].myY-10)),1,predatorNullPoint);
 		}
 	}
 	
 	if ((predator1Length==0)&&(grassHereMeter>=20))
 	{
-		allPredator1[predator1Length] = new Predator1((int)(Math.random()*1001),(int)(Math.random()*601),1,255,0,0);
+		allPredator1[predator1Length] = new Predator1((int)((Math.random()*20)+(startingGrass[predatory1PreyFinding()].myX-10)),(int)((Math.random()*20)+(startingGrass[predatory1PreyFinding()].myY-10)),1,predator1Length);
 		predator1Length++;
+	}
+}
+int predatory1PreyFinding()
+{
+	int [] aliveArray = new int[startingGrassLength];
+	int aliveArrayLength = 0;
+	for (int i=0;i<startingGrassLength;i++)
+	{
+		if (startingGrass[i].useless==false)
+		{
+			aliveArray[aliveArrayLength] = i;
+			aliveArrayLength++;
+		}
+	}
+	return aliveArray[(int)(aliveArrayLength*Math.random())];
+}
+void destroyEverything()
+{
+	if (mousePressed == true)
+	{
+		for (int i=0;i<startingGrassLength;i++)
+		{
+			startingGrass[i].useless=true;
+		}
+		for (int i=0;i<predator1Length;i++)
+		{
+			allPredator1[i].isDead=true;
+		}
 	}
 }
 class Grass
@@ -141,48 +170,49 @@ class Grass
 	{
 		if (useless == false)
 		{
-			int grassNullPoint = 0-12;
-			for (int i=0;i<startingGrassLength;i++)
+			if (Math.random()>0.2)
 			{
-				if (startingGrass[i].useless == true)
+				int grassNullPoint = 0-12;
+				for (int i=0;i<startingGrassLength;i++)
 				{
-					grassNullPoint = i;
+					if (startingGrass[i].useless == true)
+					{
+						grassNullPoint = i;
+					}
 				}
-			}
-			if (grassNullPoint != 0-12)
-			{
-				startingGrass[grassNullPoint] = new Grass(myX,myY);
-			}else
-			{
-				startingGrassLength++;
-				startingGrass[startingGrassLength-1] = new Grass(myX,myY);
+				if (grassNullPoint != 0-12)
+				{
+					startingGrass[grassNullPoint] = new Grass(myX,myY);
+				}else
+				{
+					startingGrassLength++;
+					startingGrass[startingGrassLength-1] = new Grass(myX,myY);
+				}
 			}
 		}
 	}
 }
 class Predator1
 {
-	int myX, myY, mySize, myRed, myGreen, myBlue, eaten, needToEat, canWalk;
+	int myX, myY, mySize, eaten, needToEat, canWalk, arrayNum;
 	boolean isDead;
-	Predator1(int startx, int starty,int inputSize, int inputR, int inputG, int inputB)
+	Predator1(int startx, int starty,int inputSize, int inputarray)
 	{
 		myX = startx;
 		myY = starty;
 		isDead = false;
 		mySize = inputSize;
-		myRed = inputR;
-		myGreen = inputG;
-		myBlue = inputB;
 		eaten = 0;
 		needToEat = 10;
 		canWalk = 100;
+		arrayNum = inputarray;
 	}
 	void show()
 	{
 		if (isDead == false)
 		{
-			stroke(myRed,myGreen,myBlue);
-			fill(myRed,myGreen,myBlue);
+			stroke(255,0,0);
+			fill(255,0,0);
 			ellipse(myX, myY, mySize+2, mySize+2);
 		}
 	}
@@ -191,64 +221,51 @@ class Predator1
 		if (isDead==false)
 		{
 			int closestDistance=1600;
-			canWalk -= 1;
+			canWalk -= 2;
 			int targetX =(int)(Math.random()*1001);
 			int targetY =(int)(Math.random()*601);
-			boolean cannibalism = false;
 			//distance finding
-			if (cannibalism == false)
+			for (int i=0;i<startingGrassLength;i++)
 			{
-				for (int i=0;i<startingGrassLength;i++)
-				{
-					if (startingGrass[i].useless == false)
-					{						
-						if (dist(startingGrass[i].myX,startingGrass[i].myY,myX,myY)<closestDistance)
-						{
-							closestDistance = (int)(dist(startingGrass[i].myX,startingGrass[i].myY,myX,myY));
-							targetX = startingGrass[i].myX;
-							targetY = startingGrass[i].myY;
-						}
-					}
-					if ((myX==startingGrass[i].myX)&&(myY==startingGrass[i].myY))
+				if (startingGrass[i].useless == false)
+				{						
+					if (dist(startingGrass[i].myX,startingGrass[i].myY,myX,myY)<closestDistance)
 					{
-						startingGrass[i].useless=true;
-						eaten++;
-						if (canWalk <= 115)
-						{
-							canWalk += 3;
-						}
-					}		
+						closestDistance = (int)(dist(startingGrass[i].myX,startingGrass[i].myY,myX,myY));
+						targetX = startingGrass[i].myX;
+						targetY = startingGrass[i].myY;
+					}
 				}
-			}else if (cannibalism == true)
+				if ((myX==startingGrass[i].myX)&&(myY==startingGrass[i].myY))
+				{
+					startingGrass[i].useless=true;
+					eaten++;
+					if (canWalk <= 100)
+					{
+						canWalk += 3;
+					}
+				}		
+			}if (dist(myX,myY,targetX,targetY)>mySize*100)
 			{
 				for (int i=0;i<predator1Length;i++)
 				{
-					if ((myX==allPredator1[i].myX)&&(myY==allPredator1[i].myY))
+					if (allPredator1[i].isDead==false)
 					{
-						allPredator1[i].isDead=true;
-						eaten++;
-						if (canWalk <= 115)
-						{
-							canWalk +=2;
-						}
-					}
-				}
-			}
-			//cannibalism
-			if (dist(myX,myY,targetX,targetY)>mySize*100)
-			{
-				for (int i=0;i<predator1Length;i++)
-				{
-					if (dist(myX,myY,allPredator1[i].myX,allPredator1[i].myY)<dist(myX,myY,targetX,targetY))
-					{
-						if ((myX!=allPredator1[i].myX)||(myY!=allPredator1[i].myY))
+						if (dist(myX,myY,allPredator1[i].myX,allPredator1[i].myY)<dist(myX,myY,targetX,targetY))
 						{
 							targetX = allPredator1[i].myX;
 							targetY = allPredator1[i].myY;
 						}
 					}
+					if ((myX==allPredator1[i].myX)&&(myY==allPredator1[i].myY)&&(i!=arrayNum))
+					{
+						allPredator1[i].isDead=true;
+						if (canWalk <= 100)
+						{
+							canWalk +=2;
+						}
+					}
 				}
-				cannibalism=true;
 			}
 			//actual walking
 			if (dist(myX,myY,targetX,targetY)>sq(mySize+2))
@@ -306,18 +323,22 @@ class Predator1
 				}
 				if (predatorNullPoint != 0-12)
 				{
-					allPredator1[predatorNullPoint] = new Predator1(myX,myY,mySize,myRed,myGreen,myBlue);
+					allPredator1[predatorNullPoint] = new Predator1(myX,myY,mySize,predatorNullPoint);
 					eaten = 0;
 				}else
 				{
 					predator1Length++;
-					allPredator1[predator1Length-1] = new Predator1(myX,myY,mySize,myRed,myGreen,myBlue);
+					allPredator1[predator1Length-1] = new Predator1(myX,myY,mySize,predator1Length-1);
 					eaten = 0;
 				}
 				eaten = 0;
 			}
 			//dying
 			if (canWalk<=0)			
+			{
+				isDead = true;
+			}
+			if ((myX<0)||(myX>1000)||(myY<0)||(myY>600))
 			{
 				isDead = true;
 			}
